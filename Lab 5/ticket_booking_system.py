@@ -3,6 +3,7 @@
 import hashlib
 import secrets
 
+
 THEATER_SEATS = {
     "A1": {"tier": "Standard", "price": 12.0, "is_sold": False},
     "A2": {"tier": "Standard", "price": 12.0, "is_sold": True},
@@ -17,7 +18,9 @@ def reserve_seat(seat_id, customer, order_history=None):
     if seat_id not in THEATER_SEATS or THEATER_SEATS[seat_id]["is_sold"]:
         return False
     THEATER_SEATS[seat_id]["is_sold"] = True
-    order_history.append(f"Reserved seat {seat_id} for customer {customer}")
+    order_history.append(
+        f"Reserved seat {seat_id} for customer {customer}"
+    )
     return True
 
 
@@ -37,7 +40,16 @@ def check_seat_status(seat_id):
 
 
 def compute_discounted_price(seat_id, discount_rate):
-    """Apply a numeric discount rate to a seat's base price and return the result."""
+    """Apply a numeric discount rate to a seat's base price and
+    return the result.
+
+    Args:
+        seat_id: The seat identifier (e.g. 'B1').
+        discount_rate: A float multiplier, e.g. 0.80 for a 20 % discount.
+
+    Returns:
+        The discounted price as a float.
+    """
     base_price = THEATER_SEATS[seat_id]["price"]
     final_price = base_price * discount_rate
     return final_price
