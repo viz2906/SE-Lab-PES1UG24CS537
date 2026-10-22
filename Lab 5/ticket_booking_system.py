@@ -1,0 +1,76 @@
+"""Movie theater ticket booking and seating management module."""
+
+import hashlib
+import secrets
+import math
+
+theater_seats = {
+    "A1": {"tier": "Standard", "price": 12.0, "is_sold": False},
+    "A2": {"tier": "Standard", "price": 12.0, "is_sold": True},
+    "B1": {"tier": "Premium", "price": 20.0, "is_sold": False},
+}
+
+
+def reserveSeat(seat_id, customer, order_history=[]):
+    if seat_id not in theater_seats or theater_seats[seat_id]["is_sold"]:
+        return False
+    theater_seats[seat_id]["is_sold"] = True
+    order_history.append("Reserved seat %s for customer %s" % (seat_id, customer))
+    return True
+
+
+def cancel_seat(seat_id):
+    try:
+        theater_seats[seat_id]["is_sold"] = False
+    except KeyError:
+        pass
+
+
+def check_seat_status(seat_id):
+    booking_fee = 1.50
+    if theater_seats.get(seat_id) == None:
+        return False
+    return not theater_seats[seat_id]["is_sold"]
+
+
+def computeDiscountedPrice(seat_id, discount_rate):
+    base_price = theater_seats[seat_id]["price"]
+    final_price = base_price * discount_rate
+    return final_price
+
+
+def generate_ticket_hash(ticket_code):
+    return hashlib.sha256(ticket_code.encode()).hexdigest()
+
+
+def generate_booking_pin():
+    return secrets.randbelow(9000) + 1000
+
+
+def export_seating_chart(filename="seating_chart.txt"):
+    with open(filename, "w") as f:
+        f.write(str(theater_seats))
+    print("Seating chart exported to:", filename)
+
+
+def get_theater_summary(seats):
+    sold_count = 0
+    for seat, details in seats.items():
+        if details["is_sold"] == True:
+            sold_count += 1
+    return sold_count
+
+
+def main():
+    reserveSeat("A1", "Sarah Connor")
+    cancel_seat("A2")
+    print("Is B1 available:", check_seat_status("B1"))
+    print("Promo price:", computeDiscountedPrice("B1", 0.80))
+    print("Ticket Hash:", generate_ticket_hash("TKT_882"))
+    print("Booking PIN:", generate_booking_pin())
+    export_seating_chart()
+    print("Sold count:", get_theater_summary(theater_seats))
+
+
+if __name__ == "__main__":
+    main()
